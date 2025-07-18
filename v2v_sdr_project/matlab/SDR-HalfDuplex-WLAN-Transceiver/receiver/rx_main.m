@@ -12,18 +12,19 @@ function [dataCfg, sdrReceiver] = rx_main(txWaveform, sdrReceiver, dataCfg, nonH
             % === Process Received Signal ===
             [dataCfg] = process_received_signal(rxWaveform, dataCfg, waveCfg, sdrCfg, nonHTcfg, viewers);
 
+            if isempty(rxWaveform)
+                warning('Reception failed after %d attempts.', maxRetries);
+                % === Reconstruct Data ===
+                reconstruct_data(waveCfg, dataCfg); if sdrCfg.displayFlag==true end
+            end
+
         catch ME
             fprintf('[WARN] Receive attempt %d failed: %s\n', retryCount+1, ME.message);
             
-            pause(0.5); % Optional: pause to allow transmitter/warmup to stabilize
+            % pause(0.5); % Optional: pause to allow transmitter/warmup to stabilize
             retryCount = retryCount + 1;
         end
     end
 
-    if ~isempty(rxWaveform)
-        warning('Reception failed after %d attempts.', maxRetries);
-        % === Reconstruct Data ===
-        reconstruct_data(waveCfg, dataCfg); if sdrCfg.displayFlag==true end
-    end
 
 end

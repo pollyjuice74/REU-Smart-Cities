@@ -1,7 +1,5 @@
 % tx_main.m – Transmitter entry point
 function [txWaveform, sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg] = tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg)
-    fprintf("Starting Transmitter...\n");
-
     % Prepare TX Data
     [dataCfg, waveCfg] = prepare_tx_data(dataCfg, waveCfg);  % Or modify prepare_tx_data() to accept bytes
     

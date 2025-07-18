@@ -1,5 +1,5 @@
 function [sdrTransmitter, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = init_transmitter(dataCfg, sdrCfg, waveCfg)
-
+    %%% Turn this into a function %%%
     % Prepare TX Data
     [dataCfg, waveCfg] = prepare_tx_data(dataCfg, waveCfg);  % Or modify prepare_tx_data() to accept bytes
     
@@ -8,6 +8,7 @@ function [sdrTransmitter, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = init
 
     % Generate waveform
     [txWaveform, nonHTcfg, sdrCfg, waveCfg] = generate_waveform(dataCfg, nonHTcfg, sdrCfg, waveCfg);
+    %%%
 
     if strcmpi(sdrCfg.channel,"OverTheAir")
         sdrTransmitter = sdrtx(sdrCfg.deviceName, ...
