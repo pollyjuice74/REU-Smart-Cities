@@ -10,11 +10,22 @@ function main(varargin)
     % === CONFIG ===
     waveCfg = waveform_config();
     sdrCfg = sdr_config(); 
-    sdrCfg.channel = "OverTheAir";
     dataCfg = data_config();
     viewers = init_viewers();
     dataCfg = random_lidar(dataCfg);
 
+    % === SETTINGS   ===
+    sdrCfg.channel = "OverTheAir";
+    dataCfg.dataSource = "ros";
+
+    % --- ROS ---
+    if dataCfg.dataSource == "ros"
+        ptCloud = ros_connection(dataCfg);
+    else
+        dataCfg = random_lidar(dataCfg);
+    end
+
+    % --- TX/RX Mode ---
     switch mode
         case "tx"
             sdrCfg.txID = 'usb:0';
@@ -22,7 +33,7 @@ function main(varargin)
                 init_transmitter(dataCfg, sdrCfg, waveCfg);
             tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
         case "rx"
-            sdrCfg.rxID = 'usb:1';
+            sdrCfg.rxID = 'usb:0';
             [~, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = ...
                 init_transmitter(dataCfg, sdrCfg, waveCfg);
             sdrReceiver = init_receiver(txWaveform, sdrCfg, waveCfg);
