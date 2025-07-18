@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="your_package" type="fuse_pointclouds.py" name="fuse_pointclouds" output="screen" />
+  <param name="use_sim_time" value="false"/>
+</launch>
