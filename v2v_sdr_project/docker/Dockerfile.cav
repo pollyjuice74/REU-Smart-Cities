@@ -1,0 +1,7 @@
+FROM ros_orbit_base
+
+COPY ./node_logic/cav_logic /home/ros_user/cav_logic
+
+WORKDIR /home/ros_user/cav_logic
+
+CMD ["python3", "main.py", "--role", "CAV"]

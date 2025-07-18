@@ -1,0 +1,27 @@
+# Use your existing ROS base image
+FROM ros_lidar_base_image
+
+USER root
+
+# Install dependencies and update CA certs
+RUN apt-get update && \
+    apt-get install -y curl gnupg git ca-certificates && \
+    update-ca-certificates
+
+# Optional: create OrbitDB directory
+RUN mkdir -p /opt/orbitdb
+
+# Download from IPFS gateway — replace with real CID
+RUN curl -L https://ipfs.io/ipfs/QmYourOrbitBuildCID -o orbitdb_bundle.tgz && \
+    tar -xzf orbitdb_bundle.tgz -C /opt/orbitdb
+
+WORKDIR /opt/orbitdb
+CMD ["node", "your_main.js"]
+
+
+
+# docker build -f Dockerfile.orbit_base -t ros_orbit_lidar_node_image  .  
+
+# npm install @orbitdb/core helia
+# tar -czf orbitdb_bundle.tgz node_modules package.json
+# ipfs add orbitdb_bundle.tgz

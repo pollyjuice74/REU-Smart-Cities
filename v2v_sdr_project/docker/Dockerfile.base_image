@@ -1,0 +1,26 @@
+FROM ros_lidar_base_image  
+
+# Create non-root user matching host UID
+ARG USERNAME=pollyjuice74
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# Create user
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME && \
+    apt-get update && apt-get install -y sudo && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    if [ -d /root/catkin_ws ]; then \
+        cp -r /root/catkin_ws /home/$USERNAME/catkin_ws && \
+        chown -R $USER_UID:$USER_GID /home/$USERNAME/catkin_ws; \
+    fi && \
+    if [ -d /root/.ros ]; then \
+        cp -r /root/.ros /home/$USERNAME/.ros && \
+        chown -R $USER_UID:$USER_GID /home/$USERNAME/.ros; \
+    fi && \
+    echo 'source /opt/ros/noetic/setup.bash' >> /home/$USERNAME/.bashrc && \
+    echo 'source ~/catkin_ws/devel/setup.bash' >> /home/$USERNAME/.bashrc
+
+USER $USERNAME
+WORKDIR /home/$USERNAME
+

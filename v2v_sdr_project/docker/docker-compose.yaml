@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  smart_unit:
+    build: .
+    environment:
+      - ROLE=RSU
+    volumes:
+      - rsu_data:/app/data
+    command: ["python", "main.py", "--mode", "RSU"]
+
+volumes:
+  rsu_data:

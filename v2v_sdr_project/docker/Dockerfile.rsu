@@ -1,0 +1,7 @@
+FROM ros_orbit_lidar_node_image
+
+COPY ./node_logic/rsu_logic /home/ros_user/rsu_logic
+
+WORKDIR /home/ros_user/rsu_logic
+
+CMD ["python3", "main.py", "--role", "RSU"]
