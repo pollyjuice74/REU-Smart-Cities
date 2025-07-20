@@ -1,0 +1,14 @@
+function dataCfg = data_config()
+    dataCfg.dataSource = "random"; % Options: "random", "ros"
+    dataCfg.scaleFactor = 100;
+    dataCfg.publisherPath = '/sdr_lidar';
+    
+    dataCfg.txDataBits = [];
+    dataCfg.txLidarBytes = [];
+    dataCfg.txLidarMatrix = [];
+
+    dataCfg.rxDataBits = [];
+    dataCfg.rxLidarBytes = [];
+    dataCfg.rxLidarMatrix = [];
+    
+end
