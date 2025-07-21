@@ -17,39 +17,35 @@ function main(varargin)
     % === SETTINGS   ===
     sdrCfg.channel = "OverTheAir";
     dataCfg.dataSource = "ros";
+    dataCfg.publisherPath = '/sdr_lidar';
+    sdrCfg.txID = 'usb:0';
+    sdrCfg.rxID = 'usb:0';
 
     % --- ROS ---
     if dataCfg.dataSource == "ros"
-        ptCloud = ros_connection(dataCfg);
+        dataCfg = ros_connection(dataCfg); % add publisher path
     else
         dataCfg = random_lidar(dataCfg);
     end
 
-    % --- TX/RX Mode ---
+     % --- Initialize TX/RX ---
+    [sdrTransmitter, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = ...
+        init_transmitter(dataCfg, sdrCfg, waveCfg);
+    sdrReceiver = init_receiver(txWaveform, sdrCfg, waveCfg);
+
+    % Use onCleanup to ensure resources get released on function exit or error
+    cleanupTransmitter = onCleanup(@() safeRelease(sdrTransmitter));
+    cleanupReceiver = onCleanup(@() safeRelease(sdrReceiver));
+
+    % --- TX/RX/Duplex Mode ---
     switch mode
         case "tx"
-            sdrCfg.txID = 'usb:0';
-            [sdrTransmitter, ~, dataCfg, nonHTcfg, sdrCfg, waveCfg] = ...
-                init_transmitter(dataCfg, sdrCfg, waveCfg);
             tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
         
         case "rx"
-            sdrCfg.rxID = 'usb:0';
-            [~, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = ...
-                init_transmitter(dataCfg, sdrCfg, waveCfg);
-            sdrReceiver = init_receiver(txWaveform, sdrCfg, waveCfg);
             rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);
         
         case "half-duplex"
-            % Use the same device for Tx and Rx
-            sdrCfg.txID = 'usb:0';
-            sdrCfg.rxID = 'usb:0';
-
-            % Initialize transmitter and receiver
-            [sdrTransmitter, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = ...
-                init_transmitter(dataCfg, sdrCfg, waveCfg);
-            sdrReceiver = init_receiver(txWaveform, sdrCfg, waveCfg);
-
             % Start simultaneous Tx and Rx
             % Example loop for duplex operation
             disp('Starting half-duplex Tx/Rx...');

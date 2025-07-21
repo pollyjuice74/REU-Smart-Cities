@@ -12,7 +12,7 @@ function [dataCfg, sdrReceiver] = rx_main(txWaveform, sdrReceiver, dataCfg, nonH
             % === Process Received Signal ===
             [dataCfg] = process_received_signal(rxWaveform, dataCfg, waveCfg, sdrCfg, nonHTcfg, viewers);
 
-            if isempty(rxWaveform)
+            if ~isempty(rxWaveform)
                 warning('Reception failed after %d attempts.', maxRetries);
                 % === Reconstruct Data ===
                 reconstruct_data(waveCfg, dataCfg); if sdrCfg.displayFlag==true end
