@@ -28,7 +28,7 @@ function main(varargin)
         dataCfg = random_lidar(dataCfg);
     end
 
-     % Initialize transmitter and receiver with cleanup logic
+     % --- Initialize TX/RX ---
     [sdrTransmitter, txWaveform, dataCfg, nonHTcfg, sdrCfg, waveCfg] = ...
         init_transmitter(dataCfg, sdrCfg, waveCfg);
     sdrReceiver = init_receiver(txWaveform, sdrCfg, waveCfg);
