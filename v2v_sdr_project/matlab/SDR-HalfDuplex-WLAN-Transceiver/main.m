@@ -19,6 +19,7 @@ function main(varargin)
     sdrCfg.displayFlag = false;
     sdrCfg.txID = 'usb:0';
     sdrCfg.rxID = 'usb:0';
+    sdrCfg.txGain = -10;
     dataCfg.dataSource = "ros";
     dataCfg.subscriberPath = '/local_lidar';
     dataCfg.publisherPath = '/sdr_lidar';
@@ -37,9 +38,11 @@ function main(varargin)
     cleanupTransmitter = onCleanup(@() safeRelease(sdrTransmitter));
     cleanupReceiver = onCleanup(@() safeRelease(sdrReceiver));
 
+    disp(waveCfg)
     % --- TX/RX/Duplex Mode ---
     switch mode
         case "tx"
+            
             tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
         
         case "rx"

@@ -5,7 +5,7 @@ function sdrCfg = sdr_config()
     sdrCfg.frequencyBand = 2.4; % GHz Options: "2.4", "5.9"
     sdrCfg.CenterFrequency = wlanChannelFrequency(sdrCfg.channelNumber, sdrCfg.frequencyBand);
     sdrCfg.txGain = 0;
-    sdrCfg.rxGain = 10; % If not using AGC
+    sdrCfg.rxGain = 30; % If not using AGC
     sdrCfg.displayFlag = true; 
 
     % Set rx/tx device IDs based on connected Plutos
@@ -21,6 +21,6 @@ function sdrCfg = sdr_config()
     end
 
     % rx
-    sdrCfg.GainSource = 'AGC Slow Attack';
+    sdrCfg.GainSource = 'Manual'; %'AGC Fast Attack';
     sdrCfg.OutputDataType =  'double';
 end

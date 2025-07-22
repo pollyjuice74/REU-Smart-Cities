@@ -132,6 +132,9 @@ function [dataCfg] = psdu_mac_decode(rxWaveform, dataCfg, waveCfg, nonHTcfg, sdr
         viewers.constellation(reshape(eqSym,[],1)); % Current constellation
         release(viewers.constellation);
 
+        viewers.spectrumScope(rxWaveform);
+        release(viewers.spectrumScope);
+
         refSym = wlanClosestReferenceSymbol(eqSym,rxNonHTcfg);
         [evm.RMS,evm.Peak] = evmCalculator(refSym,eqSym);
 
