@@ -216,8 +216,8 @@ function [dataCfg] = psdu_mac_decode(rxWaveform, dataCfg, waveCfg, nonHTcfg, sdr
             continue;
         end
 
-        disp('rxBytes:');
-        disp(rxBytes);
+        %disp('rxBytes:');
+        %disp(rxBytes);
         rxBytes = rxBytes(:);
         xyzMatrix = typecast(uint8(rxBytes), 'single');
         xyzMatrix = reshape(xyzMatrix, 3, []).'; % Nx3 matrix for pointCloud

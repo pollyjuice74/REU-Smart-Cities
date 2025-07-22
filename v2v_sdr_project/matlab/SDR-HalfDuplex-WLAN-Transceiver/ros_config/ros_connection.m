@@ -15,27 +15,4 @@ function dataCfg = ros_connection(dataCfg)
         ptCloud = zeros(100, 3);  % fallback
         return;
     end
-
-    % === Prepare publisher ===
-    sdrPub = rospublisher(dataCfg.publisherPath, 'std_msgs/Float64MultiArray');
-    fprintf('[CONNECTED] Connected to ROS sdr publisher on %s', dataCfg.publisherPath);
-    msg = rosmessage(sdrPub);
-
-    % === Send dummy or real data ===
-    try
-        % Replace with your real RX logic
-        for i = 1:5  % Just send 5 packets for now
-            dummyRx = rand(1, 64);  % Replace with: rx_main() or receive(...)
-            msg.Data = dummyRx;
-            send(sdrPub, msg);
-            disp("[INFO] Sent SDR packet to ROS.");
-            pause(0.5);
-        end
-
-    catch ME
-        warning("Could not publish SDR data: %s", ME.message);
-    end
-
-    % Return something (dummy for now)
-    ptCloud = rand(100, 3);
 end

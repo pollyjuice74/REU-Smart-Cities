@@ -8,8 +8,8 @@ import numpy as np
 def mock_sdr_lidar_publisher():
     rospy.init_node('mock_sdr_lidar_publisher')
     
-    pub_sdr = rospy.Publisher('/sdr_lidar', PointCloud2, queue_size=1)
-    pub_lidar = rospy.Publisher('/velodyne_points', PointCloud2, queue_size=1)
+    # pub_sdr = rospy.Publisher('/sdr_lidar', PointCloud2, queue_size=1)
+    pub_lidar = rospy.Publisher('/local_lidar', PointCloud2, queue_size=1)
     
     rate = rospy.Rate(1)
 
@@ -25,9 +25,9 @@ def mock_sdr_lidar_publisher():
         header.frame_id = 'map'
 
         # SDR PointCloud
-        points_sdr = np.random.rand(100, 3)
-        pc2_msg_sdr = pc2.create_cloud(header, fields, points_sdr)
-        pub_sdr.publish(pc2_msg_sdr)
+        # points_sdr = np.random.rand(100, 3)
+        # pc2_msg_sdr = pc2.create_cloud(header, fields, points_sdr)
+        # pub_sdr.publish(pc2_msg_sdr)
 
         # LIDAR PointCloud
         points_lidar = np.random.rand(100, 3) + 2.0  # Just to make them different

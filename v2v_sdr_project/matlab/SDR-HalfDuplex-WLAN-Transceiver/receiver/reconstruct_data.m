@@ -1,4 +1,4 @@
-function rxLidarMatrix = reconstruct_data(waveCfg, dataCfg)
+function [dataCfg] = reconstruct_data(dataCfg, sdrCfg, waveCfg)
     
     % Variables
     msduLength = waveCfg.msduLength;
@@ -52,10 +52,13 @@ function rxLidarMatrix = reconstruct_data(waveCfg, dataCfg)
             bitErrorRate = comm.ErrorRate;
             err = bitErrorRate(double(rxDataBits(:)), ...
                 txDataBits(1:length(reshape(rxDataBits,[],1))));
-            fprintf('  \nBit Error Rate (BER):\n');
-            fprintf('          Bit Error Rate (BER) = %0.5f\n',err(1));
-            fprintf('          Number of bit errors = %d\n',err(2));
-            fprintf('    Number of transmitted bits = %d\n\n',length(txDataBits));
+
+            if sdrCfg.displayFlag == true 
+                fprintf('  \nBit Error Rate (BER):\n');
+                fprintf('          Bit Error Rate (BER) = %0.5f\n',err(1));
+                fprintf('          Number of bit errors = %d\n',err(2));
+                fprintf('    Number of transmitted bits = %d\n\n',length(txDataBits));
+            end
         end
 
         % ===== rxImage Plotting =====
@@ -102,5 +105,5 @@ function rxLidarMatrix = reconstruct_data(waveCfg, dataCfg)
     end
 
     % Set variables
-    dataCfg.rxLidarMatrix = rxLidarMatrix
+    dataCfg.rxLidarMatrix = rxLidarMatrix;
 end

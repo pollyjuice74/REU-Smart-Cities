@@ -1,42 +1,50 @@
 #!/usr/bin/env python3
 import rospy
-from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import PointCloud2
 from message_filters import ApproximateTimeSynchronizer, Subscriber
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')  # or 'Qt5Agg' if you have it
+from functools import partial
 
 # Most of these are empty directories
-# from src.visualization import ...
-from fusion.fused_callback import fused_callback
+from fusion.fusion_callback import fusion_callback
 from storage.ipfs_store import store_to_ipfs
 # from src.rsu_logic import ...
 # from src.cav_logic import ...
 
-pointcloud_pub = None 
+latest_local = None
+latest_sdr = None
+pointcloud_pub = None
 received_data_log = [] 
 
+def local_callback(msg):
+    global latest_local
+    rospy.loginfo("[ROS] Received local_lidar data")
+    latest_local = msg
+
+def sdr_callback(msg):
+    global latest_sdr
+    rospy.loginfo("[ROS] Received sdr_lidar data")
+    latest_sdr = msg
+
 def main():
-    # First visualize received data, via print, rviz, etc.
-    # Then fuse that data with some algorithm, better if its a ros one
-    # Lastly save fused data to internal ipfs storage
-        # CAVs collect data (/velodyne_points) RSUs fuse & store data compressed (/sdr_lidar)
+    global pointcloud_pub
     rospy.init_node('sdr_fusion_node', anonymous=True)
 
-    # Publisher for RViz point cloud
     pointcloud_pub = rospy.Publisher('/fused_pointcloud', PointCloud2, queue_size=10)
 
+    # Subscribers for individual logging (not strictly needed with message_filters, but good for debug)
+    rospy.Subscriber('/local_lidar', PointCloud2, local_callback)
+    rospy.Subscriber('/sdr_lidar', PointCloud2, sdr_callback)
+
+    # Synced fusion subscriber
     sdr_sub = Subscriber('/sdr_lidar', PointCloud2)
-    lidar_sub = Subscriber('/velodyne_points', PointCloud2)  # Replace topic/type as needed
+    local_sub = Subscriber('/local_lidar', PointCloud2)
 
-    ats = ApproximateTimeSynchronizer([sdr_sub, lidar_sub], queue_size=10, slop=0.1, allow_headerless=True)
-    ats.registerCallback(lambda sdr, lidar: fused_callback(sdr, lidar, pointcloud_pub, received_data_log))
+    ats = ApproximateTimeSynchronizer([sdr_sub, local_sub], queue_size=10, slop=0.5)
+    ats.registerCallback(partial(fusion_callback, pub=pointcloud_pub, log=received_data_log))
 
-    # Then save data
+    # Storage
 
-    rospy.loginfo("[ROS] SDR-LIDAR Fusion Node Running")
+    rospy.loginfo("[ROS] SDR Fusion Node Started.")
     rospy.spin()
 
 

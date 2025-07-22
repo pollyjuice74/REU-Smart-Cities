@@ -18,7 +18,7 @@ function [txWaveform, nonHTcfg, sdrCfg, waveCfg] = generate_waveform(dataCfg, no
 
         % MAC Frame
         cfgMAC = wlanMACFrameConfig('FrameType','Data','SequenceNumber',i);
-        [psdu, lengthMPDU] = wlanMACFrame(frameBody, cfgMAC, 'OutputFormat','bits');
+        [psdu, lengthMPDU] = wlanMACFrame(frameBody, cfgMAC, 'OutputFormat', 'bits');
         data = [data; psdu]; %#ok<AGROW>
     end
 

@@ -4,7 +4,12 @@ from sensor_msgs.msg import PointCloud2, PointField
 import std_msgs.msg
 import numpy as np
 
-def fused_callback(sdr_msg: PointCloud2, lidar_msg: PointCloud2, pub, log):
+def fusion_callback(sdr_msg: PointCloud2, lidar_msg: PointCloud2, pub, log):
+    rospy.loginfo("[Fusion] Received SDR PointCloud with %d points",
+                  sdr_msg.width * sdr_msg.height)
+    rospy.loginfo("[Fusion] Received LOCAL PointCloud with %d points",
+                  lidar_msg.width * lidar_msg.height)
+    
     # Convert to numpy arrays
     sdr_points = list(pc2.read_points(sdr_msg, field_names=("x", "y", "z"), skip_nans=True))
     lidar_points = list(pc2.read_points(lidar_msg, field_names=("x", "y", "z"), skip_nans=True))
