@@ -1,11 +1,12 @@
 # memory/rsu_memory_adapter.py
 import os
 import json
-from memory_manager import MemoryManager
+from src.memory.memory_manager import MemoryManager
 
 class RSUMemoryManager(MemoryManager):
-    def __init__(self, base_dir="./data/memory/rsu"):
-        super().__init__("RSU", base_dir)
+    def __init__(self, ):
+        # Make dynamic with hash ids
+        super().__init__(storage_dir=os.path.join("/tmp/rsu_memory", "RSU"))
 
     def update_map(cloud):
         """

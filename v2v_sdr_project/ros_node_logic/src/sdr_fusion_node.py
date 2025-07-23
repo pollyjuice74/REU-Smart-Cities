@@ -6,9 +6,8 @@ from functools import partial
 
 # Most of these are empty directories
 from fusion.fusion_callback import fusion_callback
-from storage.ipfs_store import store_to_ipfs
-# from src.rsu_logic import ...
-# from src.cav_logic import ...
+from src.rsu_logic.rsu_main import run_rsu_node
+from src.cav_logic.cav_main import run_cav_node
 
 latest_local = None
 latest_sdr = None
@@ -25,10 +24,11 @@ def sdr_callback(msg):
     rospy.loginfo("[ROS] Received sdr_lidar data")
     latest_sdr = msg
 
-def main():
+def main(mode="RSU"):
     global pointcloud_pub
-    rospy.init_node('sdr_fusion_node', anonymous=True)
+    rospy.init_node(f'{mode}_sdr_fusion_node', anonymous=True)
 
+    # Interface topic for IPFS since all sdr topics would be fused with local here immediately
     pointcloud_pub = rospy.Publisher('/fused_pointcloud', PointCloud2, queue_size=10)
 
     # Subscribers for individual logging (not strictly needed with message_filters, but good for debug)
@@ -42,11 +42,28 @@ def main():
     ats = ApproximateTimeSynchronizer([sdr_sub, local_sub], queue_size=10, slop=0.5)
     ats.registerCallback(partial(fusion_callback, pub=pointcloud_pub, log=received_data_log))
 
-    # Storage
+    # Handles IPFS database logic for either a centralized autonomous vehicle CAV or a road side unit RSU
+    if mode == "CAV":
+        run_cav_node()
+    elif mode == "RSU":
+        run_rsu_node()
+    else:
+        rospy.logwarn(f"[ROS] Unknown mode: {mode}. No memory logic initialized.")
 
-    rospy.loginfo("[ROS] SDR Fusion Node Started.")
+    rospy.loginfo(f"[ROS] {mode} SDR Fusion Node Started.")
     rospy.spin()
 
 
 if __name__ == '__main__':
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run SDR Fusion Node for RSU or CAV")
+    parser.add_argument(
+        "--mode",
+        choices=["RSU", "CAV"],
+        default="RSU",
+        help="Select node mode: RSU or CAV (default: RSU)"
+    )
+
+    args = parser.parse_args()
+    main(mode=args.mode)
