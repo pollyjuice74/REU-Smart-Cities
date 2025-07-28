@@ -3,7 +3,7 @@ function main(varargin)
 
     % === Handle Command Line Argument ===
     p = inputParser;
-    addRequired(p, 'mode', @(x) any(validatestring(x, {'tx', 'rx', 'duplex'})));
+    addRequired(p, 'mode', @(x) any(validatestring(x, {'tx', 'rx', 'duplex', 'discovery'})));
     parse(p, varargin{:});
     mode = p.Results.mode;
 
@@ -16,11 +16,11 @@ function main(varargin)
 
     % === SETTINGS   ===
     sdrCfg.channel = "OverTheAir";
-    sdrCfg.displayFlag = false;
+    sdrCfg.displayFlag = true;
     sdrCfg.txID = 'usb:0';
     sdrCfg.rxID = 'usb:0';
     sdrCfg.txGain = -10;
-    dataCfg.dataSource = "ros";
+    dataCfg.dataSource = "random";
     dataCfg.subscriberPath = '/local_lidar';
     dataCfg.publisherPath = '/sdr_lidar';
 
@@ -42,12 +42,15 @@ function main(varargin)
     % --- TX/RX/Duplex Mode ---
     switch mode
         case "tx"
-            
-            tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
-        
+            while true
+                tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
+            end
+
         case "rx"
-            rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);
-        
+            while true
+                rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);
+            end
+                
         case "duplex"
             % Start simultaneous Tx and Rx
             % Example loop for duplex operation
@@ -63,6 +66,11 @@ function main(varargin)
             release(sdrTransmitter);
             release(sdrReceiver);
             disp('Duplex complete.');
+
+        case "discovery"
+            discovery_main(txWaveform, sdrTransmitter, sdrReceiver, ...
+                dataCfg, nonHTcfg, sdrCfg, waveCfg, ...
+                viewers);
         
         otherwise
             error('Unsupported mode');
