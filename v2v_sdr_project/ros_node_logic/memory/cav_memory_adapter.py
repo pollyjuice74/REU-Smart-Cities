@@ -1,10 +1,9 @@
 # memory/cav_memory_adapter.py
-from src.memory.memory_manager import MemoryManager
-import os
+from memory_manager import MemoryManager
 
 class CAVMemoryManager(MemoryManager):
     def __init__(self, max_entries=10):
-        super().__init__(storage_dir=os.path.join("/tmp/cav_memory", "CAV"))
+        super().__init__("CAV", base_dir="/tmp/cav_memory")
         self.cache = []
         self.max_entries = max_entries
     
