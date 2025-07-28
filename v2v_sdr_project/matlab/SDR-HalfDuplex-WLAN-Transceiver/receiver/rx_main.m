@@ -2,7 +2,8 @@
 function [dataCfg, sdrReceiver] = rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers)
     try 
         [rxWaveform] = receive_rf(txWaveform, sdrReceiver, sdrCfg, waveCfg);  % case logic for simulated/real transmission
-    
+        dataCfg.rxWaveform = rxWaveform
+        
         % === Process Received Signal ===
         [dataCfg] = process_received_signal(rxWaveform, dataCfg, waveCfg, sdrCfg, nonHTcfg, viewers);
     
