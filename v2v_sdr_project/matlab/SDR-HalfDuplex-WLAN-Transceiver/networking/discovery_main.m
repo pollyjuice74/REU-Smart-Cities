@@ -1,28 +1,30 @@
 function discovery_main(txWaveform, sdrTransmitter, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers)
     disp('Starting ALOHA-based discovery mode...');
 
-    % --- Constants ---
-    alohaProbability = 0.4;          % Chance to transmit in each iteration
-    alohaBackoff = @() 0.5 + rand() * 0.5;     % Backoff time (0 to 5 seconds)
-    maxIterations = 1000
+    alohaProbability = 1.0;                    % TX less often to RX more often
+    alohaBackoff = @() 0.3 + rand() * 0.4;    % shorter backoff after TX
+    rxDuration = 1.0;                         % listen longer per RX phase
+    maxIterations = 1000;
 
     for iter = 1:maxIterations
-        pause(0.02);
+        % Remove or minimize this pause to speed iterations
+        % pause(0.01); 
 
         if rand() < alohaProbability
-            % --- TRANSMIT ---
             disp('[TX] Transmitting ALOHA packet...');
             fprintf('[TX] Sent at %s\n', datestr(now, 'HH:MM:SS'));
-            tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);  % Async transmit
-            pause(alohaBackoff());  % Random backoff
+            tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
+
+            pause(alohaBackoff());
         else
-            % --- RECEIVE ---
-            disp('[RX] Receiveing ALOHA packet...');
-            [dataCfg, ~] = rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);  % Blocking receive    
+            disp('[RX] Receiving ALOHA packet...');
+            tStart = tic;
+            while toc(tStart) < rxDuration
+                [dataCfg, ~] = rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);
+            end
         end
     end
 
-    % --- Cleanup ---
     release(sdrTransmitter);
     release(sdrReceiver);
     disp('ALOHA Discovery complete.');
