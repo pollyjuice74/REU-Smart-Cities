@@ -1,4 +1,0 @@
-<!-- ros/launch/sdr_fusion.launch -->
-<launch>
-  <node pkg="ros_node_logic" type="rsu_node" name="rsu_node" output="screen" />
-</launch>
