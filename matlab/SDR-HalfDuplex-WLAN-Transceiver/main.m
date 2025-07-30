@@ -22,6 +22,7 @@ function main(varargin)
     sdrCfg.displayFlag = true;
     sdrCfg.txID = 'usb:0';
     sdrCfg.rxID = 'usb:0';
+    sdrCfg.GainSource = 'AGC Fast Attack'; % 'Manual';
     sdrCfg.txGain = -10;
     dataCfg.dataSource = "random";
     dataCfg.subscriberPath = '/local_lidar';

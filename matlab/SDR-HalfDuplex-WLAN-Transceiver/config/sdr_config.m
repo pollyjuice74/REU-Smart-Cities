@@ -21,6 +21,6 @@ function sdrCfg = sdr_config()
     end
 
     % rx
-    sdrCfg.GainSource = 'Manual'; %'AGC Fast Attack';
+    sdrCfg.GainSource = 'AGC Fast Attack'; % 'Manual';
     sdrCfg.OutputDataType =  'double';
 end
