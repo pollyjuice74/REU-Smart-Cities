@@ -23,6 +23,7 @@ function discovery_main(txWaveform, sdrTransmitter, sdrReceiver, dataCfg, nonHTc
                 [dataCfg, ~] = rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);
             end
         end
+
     end
 
     release(sdrTransmitter);

@@ -1,0 +1,75 @@
+function viewers = init_viewers()
+    % === Image Plot Viewer ===
+    imFig = figure;
+    imFig.NumberTitle = 'off';
+    imFig.Name = 'Image Plot';
+    imFig.Visible = 'off';
+    
+    % === Spectrum Viewer ===
+    viewers.spectrumScope = spectrumAnalyzer( ...
+        'SpectrumType', 'power-density', ...
+        'Title', 'Received Baseband WLAN Signal Spectrum', ...
+        'YLabel', 'Power spectral density', ...
+        'Position', [69 376 800 450]);
+
+    % === Constellation Viewer ===
+    refQAM = wlanReferenceSymbols('16QAM');
+    viewers.constellation = comm.ConstellationDiagram( ...
+        'Title', 'Equalized WLAN Symbols', ...
+        'ShowReferenceConstellation', true, ...
+        'ReferenceConstellation', refQAM, ...
+        'Position', [878 376 460 460]);
+
+    % === Image Figure Handle ===
+    viewers.imFig = imFig;
+
+        if ~isfield(plotHandles, 'fig') || ~isvalid(plotHandles.fig)
+            % Create figure and subplots only once
+            plotHandles.fig = figure(200); clf;
+            plotHandles.ax1 = subplot(2,1,1);
+            plotHandles.berLine = plot(plotHandles.ax1, berHistory, '-o');
+            xlabel(plotHandles.ax1, 'Transmission Iteration');
+            ylabel(plotHandles.ax1, 'BER');
+            title(plotHandles.ax1, 'Bit Error Rate over Time');
+            grid(plotHandles.ax1, 'on');
+    
+            plotHandles.ax2 = subplot(2,1,2);
+            plotHandles.evmLine = plot(plotHandles.ax2, evmHistory, '-x', 'Color', [0.2 0.7 0.2]);
+            xlabel(plotHandles.ax2, 'Transmission Iteration');
+            ylabel(plotHandles.ax2, 'EVM (%)');
+            title(plotHandles.ax2, 'EVM over Time');
+            grid(plotHandles.ax2, 'on');
+        else
+            % Update data
+            set(plotHandles.berLine, 'YData', berHistory, 'XData', 1:length(berHistory));
+            set(plotHandles.evmLine, 'YData', evmHistory, 'XData', 1:length(evmHistory));
+    
+            % Rescale axes
+            ylim(plotHandles.ax1, [0 max(1e-5, max(berHistory)*1.2)]);
+            ylim(plotHandles.ax2, [0 max(1e-5, max(evmHistory)*1.2)]);
+        end
+    
+        drawnow limitrate
+    end
+
+
+    meanBER = mean(berHistory);
+    stdBER = std(berHistory);
+    fprintf('[BER Stats] Mean = %.5f | Std Dev = %.5f\n', meanBER, stdBER);
+
+
+end
+
+% % Visualize point cloud
+% fprintf('\nConstructing point cloud from received data.\n');
+% pcshow(rxLidarMatrix(:,1:3)); % 3D plot
+% title('Received LiDAR Point Cloud');
+
+% figure;
+% subplot(1,2,1);
+% pcshow(txLidarMatrix(:,1:3));
+% title('Original LiDAR');
+% 
+% subplot(1,2,2);
+% pcshow(rxLidarMatrix(:,1:3));
+% title('Received LiDAR');

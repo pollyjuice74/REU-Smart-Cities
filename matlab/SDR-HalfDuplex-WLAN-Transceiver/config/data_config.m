@@ -11,4 +11,8 @@ function dataCfg = data_config()
     dataCfg.rxDataBits = [];
     dataCfg.rxLidarBytes = [];
     dataCfg.rxLidarMatrix = [];
+
+    dataCfg.berHistory = [];
+    dataCfg.bitsReceived = [];
+
 end

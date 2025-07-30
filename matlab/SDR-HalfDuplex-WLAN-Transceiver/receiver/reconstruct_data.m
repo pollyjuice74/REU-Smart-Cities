@@ -1,4 +1,4 @@
-function [dataCfg] = reconstruct_data(dataCfg, sdrCfg, waveCfg)
+function [dataCfg] = reconstruct_data(dataCfg, sdrCfg, waveCfg, viewers)
     
     % Variables
     msduLength = waveCfg.msduLength;
@@ -14,7 +14,7 @@ function [dataCfg] = reconstruct_data(dataCfg, sdrCfg, waveCfg)
     txLidarBytes = dataCfg.txLidarBytes;
     
     rxDataBits = dataCfg.rxDataBits;
-
+ 
     % === Reconstruct Lidar Data ===
     if ~(isempty(fineTimingOffset) || isempty(pktOffset))
 
@@ -58,31 +58,14 @@ function [dataCfg] = reconstruct_data(dataCfg, sdrCfg, waveCfg)
                 fprintf('          Bit Error Rate (BER) = %0.5f\n',err(1));
                 fprintf('          Number of bit errors = %d\n',err(2));
                 fprintf('    Number of transmitted bits = %d\n\n',length(txDataBits));
+
+                % === Log Statistics (Post-Reconstruction) ===
+                dataCfg.berHistory(end+1) = err(1);
+                dataCfg.bitsReceived(end+1) = length(txDataBits);
+            
+                viewers.logStats(dataCfg); % centralized logger
             end
         end
-
-        % ===== rxImage Plotting =====
-        % decData = bit2int(reshape(rxDataBits(:),8,[]),8,false)';
-        % 
-        % % Append NaNs to fill any missing image data
-        % if length(decData)<length(txImage)
-        %     numMissingData = length(txImage)-length(decData);
-        %     decData = [decData;NaN(numMissingData,1)];
-        % else
-        %     decData = decData(1:length(txImage));
-        % end
-        % 
-        % % Recreate image from received data
-        % fprintf('\nConstructing image from received data.\n');
-        % receivedImage = uint8(reshape(decData,imsize));
-        % % Plot received image
-        % if exist('imFig','var') && ishandle(imFig) % If Tx figure is open
-        %     figure(imFig); subplot(212);
-        % else
-        %     figure; subplot(212);
-        % end
-        % imshow(receivedImage);
-        % title(sprintf('Received Image'));
 
         % ===== rxLiDAR Plotting =====
         % Convert bits to uint8
@@ -102,8 +85,7 @@ function [dataCfg] = reconstruct_data(dataCfg, sdrCfg, waveCfg)
         % Reconstruct the original [x y z i] or [x y z]
         lidarShape = size(txLidarMatrix); % from transmitter
         rxLidarMatrix = double(reshape(rxLidarInt, lidarShape)) / scaleFactor;
+        dataCfg.rxLidarMatrix = rxLidarMatrix;
     end
-
-    % Set variables
-    dataCfg.rxLidarMatrix = rxLidarMatrix;
+    
 end

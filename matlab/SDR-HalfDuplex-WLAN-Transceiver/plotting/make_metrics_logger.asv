@@ -1,0 +1,41 @@
+function logger = make_metrics_logger(viewers)
+    logger = @logStats;
+
+    function logStats(dataCfg)
+        % Variables
+        berHistory = dataCfg.berHistory;
+        bitsSent = dataCfg.bitsSent; 
+
+        % Update the BER plot
+        if isfield(viewers, 'berLine') && isvalid(viewers.berLine)
+            set(viewers.berLine, 'YData', berHistory, 'XData', 1:length(berHistory));
+    
+            ylim(viewers.ax1, [0 max(1e-5, max(berHistory)*1.2)]);
+            drawnow limitrate;
+        end
+
+        % Print summary
+        fprintf('\n[Statistics Summary]\n');
+        fprintf('Mean BER: %.5f | Std: %.5f | Mean Bits Sent: %d | Packages Sent: %d | Total Bits Sent: %d \n', ...
+            mean(berHistory), std(berHistory), mean(bitsSent), length(bitsSent), sum(bitsSent));
+        
+        % Save file as .json
+        if ~exist('recordings', 'dir')
+            mkdir('recordings');
+        end
+        filename = sprintf('recordings/packetStats_%s.json', datestr(now, 'yyyymmdd_HHMMSS'));
+        % data
+        logData = struct( ...
+            'timestamp', datestr(now, 'yyyy-mm-dd HH:MM:SS'), ...
+            'meanBER', mean(berHistory), ...
+            'stdBER', std(berHistory), ...
+            ''
+            'totalBits', sum(bitsSent) ...
+        );
+        jsonText = jsonencode(logData);
+        fid = fopen(filename, 'w');
+        fwrite(fid, jsonText, 'char');
+        fclose(fid);
+        fprintf('[✓] Stats saved to JSON: %s\n', filename);
+    end
+end

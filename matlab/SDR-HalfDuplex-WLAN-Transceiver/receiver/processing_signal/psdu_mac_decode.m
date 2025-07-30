@@ -225,26 +225,10 @@ function [dataCfg] = psdu_mac_decode(rxWaveform, dataCfg, waveCfg, nonHTcfg, sdr
         xyzMatrix = typecast(uint8(rxBytes), 'single');
         xyzMatrix = reshape(xyzMatrix, 3, []).'; % Nx3 matrix for pointCloud
         
-        % % % === ROS PUBLISHER ===
-        % if strcmp(dataCfg.dataSource, 'ros')
-        %     % if ~robotics.ros.internal.Global.isNodeActive
-        %     %     rosinit('http://<ros_master_ip>:11311'); % Replace with actual ROS master
-        %     % end
-        % 
-        %     ptCloudPub = rospublisher('/lidar_rx', 'sensor_msgs/PointCloud2');
-        %     msg = rosmessage(ptCloudPub);
-        % 
-        %     ptCloud = pointCloud(xyzMatrix);
-        %     msg = rosWriteXYZ(msg, ptCloud);
-        %     send(ptCloudPub, msg);
-        % 
-        %     disp('Published point cloud to ROS.');
-        % end
-
         % Counter
         pktInd = pktInd+1;
     end
-
+        
     % === Final Outputs ===
     % Flatten bitstream
     rxDataBits = cat(1, rxBit{:}); % Column vector

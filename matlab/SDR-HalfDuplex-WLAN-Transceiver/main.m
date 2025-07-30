@@ -3,7 +3,7 @@ function main(varargin)
 
     % === Handle Command Line Argument ===
     p = inputParser;
-    addRequired(p, 'mode', @(x) any(validatestring(x, {'tx', 'rx', 'duplex', 'discovery'})));
+    addRequired(p, 'mode', @(x) any(validatestring(x, {'tx', 'rx', 'self-transmit', 'discovery'})));
     parse(p, varargin{:});
     mode = p.Results.mode;
 
@@ -11,8 +11,11 @@ function main(varargin)
     waveCfg = waveform_config();
     sdrCfg = sdr_config(); 
     dataCfg = data_config();
-    viewers = init_viewers();
     dataCfg = random_lidar(dataCfg); % initialize data for tx/rx init
+
+    % === PLOTTING ===
+    viewers = init_viewers();
+    viewers.logStats = make_metrics_logger(viewers);
 
     % === SETTINGS   ===
     sdrCfg.channel = "OverTheAir";
@@ -39,11 +42,31 @@ function main(varargin)
     cleanupReceiver = onCleanup(@() safeRelease(sdrReceiver));
 
     disp(waveCfg)
+
+    % % Lists for time series display/statistical analysis
+    % global evmHistory berHistory;
+    % evmHistory = [];
+    % berHistory = [];
+    % 
+    % global packetStats;
+    % if isempty(packetStats)
+    %     packetStats = struct( ...
+    %         'timestamp', {}, ...
+    %         'ber', {}, ...
+    %         'evm', {}, ...
+    %         'snr', {}, ...
+    %         'packetSeq', {}, ...
+    %         'valid', {}, ...
+    %         'length', {});
+    % end
+    % 
+
     % --- TX/RX/Duplex Mode ---
     switch mode
         case "tx"
+            transmitRepeat_flag = true
             while true
-                tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
+                tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg, transmitRepeat_flag);
             end
 
         case "rx"
@@ -51,21 +74,10 @@ function main(varargin)
                 rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers);
             end
                 
-        case "duplex"
-            % Start simultaneous Tx and Rx
-            % Example loop for duplex operation
-            disp('Starting duplex Tx/Rx...');
-
-            % Start transmission asynchronously or in background
-            tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg);
-
-            % Receive in a loop (customize this as needed)
-            rx_main(txWaveform, sdrReceiver, dataCfg, nonHTcfg, sdrCfg, waveCfg, viewers); % timeout 0.1 sec
-                
-            % Stop transmission and release hardware
-            release(sdrTransmitter);
-            release(sdrReceiver);
-            disp('Duplex complete.');
+        case "self-transmit"
+            self_transmit(txWaveform, sdrTransmitter, sdrReceiver, ...
+                dataCfg, nonHTcfg, sdrCfg, waveCfg, ...
+                viewers);
 
         case "discovery"
             discovery_main(txWaveform, sdrTransmitter, sdrReceiver, ...

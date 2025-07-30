@@ -1,6 +1,6 @@
 
 % tx_main.m – Transmitter entry point
-function [txWaveform, sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg] = tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg)
+function [txWaveform, sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg] = tx_main(sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg, transmitRepeat_flag)
     
     if dataCfg.dataSource == "ros"
         dataCfg = ros_subscribe_local(dataCfg) % create this one
@@ -16,6 +16,6 @@ function [txWaveform, sdrTransmitter, dataCfg, nonHTcfg, sdrCfg, waveCfg] = tx_m
     [txWaveform, nonHTcfg, sdrCfg, waveCfg] = generate_waveform(dataCfg, nonHTcfg, sdrCfg, waveCfg);
 
     % Transmit (optional)
-    transmit_rf(sdrTransmitter, txWaveform);
+    transmit_rf(sdrTransmitter, txWaveform, transmitRepeat_flag);
 end
    

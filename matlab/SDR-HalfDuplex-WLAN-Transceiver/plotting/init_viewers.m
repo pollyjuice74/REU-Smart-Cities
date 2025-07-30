@@ -13,27 +13,20 @@ function viewers = init_viewers()
         'Position', [69 376 800 450]);
 
     % === Constellation Viewer ===
-    refQAM = wlanReferenceSymbols('64QAM');
+    refQAM = wlanReferenceSymbols('16QAM');
     viewers.constellation = comm.ConstellationDiagram( ...
         'Title', 'Equalized WLAN Symbols', ...
         'ShowReferenceConstellation', true, ...
         'ReferenceConstellation', refQAM, ...
         'Position', [878 376 460 460]);
 
-    % === Image Figure Handle ===
-    viewers.imFig = imFig;
+    % === Figure Handle ===
+    viewers.fig = figure('Name', 'BER Viewer');
+
+    % BER subplot
+    viewers.ax1 = subplot(2, 1, 1);
+    viewers.berLine = plot(viewers.ax1, NaN, NaN, 'r');
+    title(viewers.ax1, 'BER Over Time');
+    xlabel(viewers.ax1, 'Packet Index');
+    ylabel(viewers.ax1, 'BER');
 end
-
-% % Visualize point cloud
-% fprintf('\nConstructing point cloud from received data.\n');
-% pcshow(rxLidarMatrix(:,1:3)); % 3D plot
-% title('Received LiDAR Point Cloud');
-
-% figure;
-% subplot(1,2,1);
-% pcshow(txLidarMatrix(:,1:3));
-% title('Original LiDAR');
-% 
-% subplot(1,2,2);
-% pcshow(rxLidarMatrix(:,1:3));
-% title('Received LiDAR');

@@ -9,11 +9,11 @@ function [dataCfg, sdrReceiver] = rx_main(txWaveform, sdrReceiver, dataCfg, nonH
     
         % === Reconstruct Data ===
         if ~isempty(rxWaveform) % not rx wf is empty
-            dataCfg = reconstruct_data(dataCfg, sdrCfg, waveCfg);
+            dataCfg = reconstruct_data(dataCfg, sdrCfg, waveCfg, viewers);
     
             % === Publish to ROS === 
             if dataCfg.dataSource == "ros"
                 publish_to_ros(dataCfg); %  create this
             end
-        end 
+        end
 end
