@@ -1,5 +1,5 @@
 # V2V SDR Project
-[V2V Communication - Elijah & Mario (2).pptx.pdf](https://github.com/user-attachments/files/21522227/V2V.Communication.-.Elijah.Mario.2.pptx.pdf)
+<img width="2500" height="1607" alt="V2V Communication - Elijah   Mario (2) pptx" src="https://github.com/user-attachments/assets/78c4e5d0-96a7-4592-87e2-2458f4898036" />
 
 ## Introduction
 
